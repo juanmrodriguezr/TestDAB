@@ -1,0 +1,14 @@
+# The main pipeline for python_1
+resources:
+  pipelines:
+    python_1_pipeline:
+      name: python_1_pipeline
+      ## Specify the 'catalog' field to configure this pipeline to make use of Unity Catalog:
+      # catalog: catalog_name
+      target: python_1_${bundle.target}
+      libraries:
+        - notebook:
+            path: ../src/dlt_pipeline.ipynb
+
+      configuration:
+        bundle.sourcePath: ${workspace.file_path}/src
