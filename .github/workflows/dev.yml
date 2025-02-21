@@ -1,0 +1,56 @@
+name: Deploy simple_project to DEV
+
+concurrency: 1
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - dev
+    paths:
+      - "**/*.yml"
+      - "**/*.py"
+
+jobs:
+  deploy:
+    name: "Deploy bundle"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: databricks/setup-cli@main
+
+      - run: databricks bundle deploy
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_BUNDLE_ENV: dev
+
+  pipeline_update:
+    name: "Run pipeline update"
+    runs-on: ubuntu-latest
+
+    needs:
+      - deploy
+
+    steps:
+      - uses: actions/checkout@v3
+
+#       - uses: actions/setup-python@v4
+#         with:
+#           python-version: 3.11
+#           cache: 'pip'
+
+#       - run: pip install -r requirements.txt
+#         working-directory: .github/support
+
+      - uses: databricks/setup-cli@main
+
+      - shell: bash
+        name: Run e2e test workflow
+        run: |
+          set -o pipefail
+          databricks bundle run python_1_job --refresh-all 2>&1 | tee output.log
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_BUNDLE_ENV: dev
