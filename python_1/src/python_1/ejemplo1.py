@@ -1,1 +1,1 @@
-print('Promover con Asset Bundle con GitHub')
+print('Promover completamente con Asset Bundle con GitHub')
