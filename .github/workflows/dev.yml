@@ -16,6 +16,9 @@ jobs:
   deploy:
     name: "Deploy bundle"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./python_1
 
     steps:
       - uses: actions/checkout@v3
